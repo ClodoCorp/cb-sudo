@@ -50,3 +50,13 @@ template "#{prefix}/sudoers" do
     :sudoers_defaults  => node['authorization']['sudo']['sudoers_defaults']
   )
 end
+
+unless node['authorization']['sudo']['entries'].nil?
+  node['authorization']['sudo']['entries'].each do |entry|
+    sudo entry["user"] do
+      user      entry["user"]
+      commands  entry["commands"]
+      nopasswd  entry["nopasswd"]
+    end
+  end
+end
