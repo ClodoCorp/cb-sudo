@@ -52,11 +52,11 @@ template "#{prefix}/sudoers" do
 end
 
 unless node['authorization']['sudo']['entries'].nil?
-  node['authorization']['sudo']['entries'].each do |entry|
-    sudo entry["user"] do
-      user      entry["user"]
-      commands  entry["commands"]
-      nopasswd  entry["nopasswd"]
+  node['authorization']['sudo']['entries'].each do |k, v|
+    sudo k do
+      user      k
+      commands  v["commands"]
+      nopasswd  v["nopasswd"]
     end
   end
 end
