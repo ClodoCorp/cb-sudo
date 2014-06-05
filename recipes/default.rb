@@ -19,20 +19,22 @@
 
 prefix = node['authorization']['sudo']['prefix']
 
-package 'sudo'
+package 'sudo' do
+  not_if 'which sudo'
+end
 
 if node['authorization']['sudo']['include_sudoers_d']
   directory "#{prefix}/sudoers.d" do
     mode    '0755'
     owner   'root'
-    group   'root'
+    group   node['root_group']
   end
 
   cookbook_file "#{prefix}/sudoers.d/README" do
     source  'README'
     mode    '0440'
     owner   'root'
-    group   'root'
+    group   node['root_group']
   end
 end
 
@@ -40,14 +42,15 @@ template "#{prefix}/sudoers" do
   source 'sudoers.erb'
   mode   '0440'
   owner  'root'
-  group  platform?('freebsd') ? 'wheel' : 'root'
+  group  node['root_group']
   variables(
     :sudoers_groups    => node['authorization']['sudo']['groups'],
     :sudoers_users     => node['authorization']['sudo']['users'],
     :passwordless      => node['authorization']['sudo']['passwordless'],
     :include_sudoers_d => node['authorization']['sudo']['include_sudoers_d'],
     :agent_forwarding  => node['authorization']['sudo']['agent_forwarding'],
-    :sudoers_defaults  => node['authorization']['sudo']['sudoers_defaults']
+    :sudoers_defaults  => node['authorization']['sudo']['sudoers_defaults'],
+    :command_aliases   => node['authorization']['sudo']['command_aliases']
   )
 end
 
